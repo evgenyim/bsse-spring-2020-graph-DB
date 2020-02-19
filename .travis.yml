@@ -1,5 +1,5 @@
 language: python
 install:
-  -pip3 install rdflib
+  - pip3 install rdflib
 script:
   - pytest
