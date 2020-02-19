@@ -8,8 +8,13 @@
 git clone https://github.com/evgenyim/bsse-spring-2020-graph-DB
 ```
 From directory `bsse-spring-2020-graph-DB`
+
+To checkout to dev branch
 ```
-cmod +x build.sh
+git checkout dev
+```
+Build project
+```
 ./build.sh
 ```
 Run tests
