@@ -2,4 +2,4 @@ language: python
 install:
   - pip3 install rdflib
 script:
-  - pytest
+  - python3 -m pytest
