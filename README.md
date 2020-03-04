@@ -19,5 +19,5 @@ Build project
 ```
 Run tests
 ```
-pytest
+python3 -m pytest
 ```
