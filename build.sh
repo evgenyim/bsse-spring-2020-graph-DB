@@ -1,5 +1,5 @@
 #!/bin/bash
-if pip3 install pytest && pip3 install rdflib
+if pip3 install -r requirements.txt
 then
 echo -e "\E[32mComplete"
 else
