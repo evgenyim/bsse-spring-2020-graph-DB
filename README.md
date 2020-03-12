@@ -21,3 +21,7 @@ Run tests
 ```
 python3 -m pytest
 ```
+Run console client
+```
+python3 -m src.console_client
+```
