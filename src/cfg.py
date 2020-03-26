@@ -70,12 +70,10 @@ def split_cfg(lines):
     g = Grammar(terminals=terminals,
                 nonterminals=list(non_terminals.values()),
                 rules=rules, start_symbol=non_terminals['S'])
-    new_g = ContextFree.transform_to_chomsky_normal_form(g)
-    return new_g, symbols
+    return g, symbols
 
 
-def print_cfg(g, symbols):
-    file = open('../output.txt', 'w')
+def write_cfg(g, symbols, file):
     cnt = 0
     for r in g.rules:
         a, b = r.rule
@@ -88,3 +86,11 @@ def print_cfg(g, symbols):
             else:
                 file.write(t + ' ')
         file.write('\n')
+
+
+def to_cnf_from_file(file_name):
+    lines = read_cfg(file_name)
+    g, symbols = split_cfg(lines)
+    new_g = ContextFree.transform_to_chomsky_normal_form(g)
+    file = open('../output.txt', 'w')
+    write_cfg(new_g, symbols, file)
