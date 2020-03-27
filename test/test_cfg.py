@@ -1,5 +1,5 @@
-import io
-from src.cfg import factory_rules, factory_terminal, split_cfg, write_cfg
+import io, os
+from src.cfg import factory_rules, factory_terminal, split_cfg, write_cfg, read_cfg
 from grammpy import Nonterminal
 from grammpy.transforms import ContextFree
 from grammpy.parsers import cyk
@@ -70,3 +70,9 @@ def test_write_cfg():
         write_cfg(g, symbols, output)
         assert output.getvalue() == 'S a S b S \nS eps \n' or \
             output.getvalue() == 'S eps \nS a S b S \n'
+
+
+def test_read_cfg():
+    path = os.path.dirname(__file__) + '/resources/test.txt'
+    lines = read_cfg(path)
+    assert lines == ['S a S b S\n', 'S eps']
