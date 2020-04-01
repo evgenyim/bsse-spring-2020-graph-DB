@@ -1,0 +1,8 @@
+S a X b X
+S a Z
+X a Y
+X b Y
+X eps
+Y X
+Y c c
+Z Z X
