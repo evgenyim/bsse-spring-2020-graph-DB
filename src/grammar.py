@@ -243,12 +243,15 @@ class Grammar:
                 file.write('\n')
         file.close()
 
-    def file_to_cnf(self, in_file, out_file):
-        self.read_from_file(in_file)
+    def to_cnf(self):
         self.del_long_rules()
         self.del_eps_rules()
         self.del_chain_rules()
         self.del_non_generating_terminals()
         self.del_nonreachable_terms()
         self.split_terminals()
+
+    def file_to_cnf(self, in_file, out_file):
+        self.read_from_file(in_file)
+        self.to_cnf()
         self.print_grammar(out_file)
