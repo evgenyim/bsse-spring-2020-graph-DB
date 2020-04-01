@@ -252,9 +252,3 @@ class Grammar:
         self.del_nonreachable_terms()
         self.split_terminals()
         self.print_grammar(out_file)
-
-
-
-g = Grammar()
-g.file_to_cnf('/home/evgeny/spdu/formal-languages/bsse-spring-2020-graph-DB/input.txt',
-              '/home/evgeny/spdu/formal-languages/bsse-spring-2020-graph-DB/output.txt')
