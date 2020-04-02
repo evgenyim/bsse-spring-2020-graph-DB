@@ -228,24 +228,35 @@ class Grammar:
         file = open(file_name, 'w')
         start = self.start
         rules_ = self.rules[start]
+        ret = ''
         for rule in rules_:
-            file.write(start + ' ')
+            ret += start + ' '
             for s in rule:
-                file.write(s + ' ')
-            file.write('\n')
+                ret += s + ' '
+            ret = ret[:-1]
+            ret += '\n'
         for left, rules in self.rules.items():
             if left == start:
                 continue
             for rule in rules:
-                file.write(left + ' ')
+                ret += left + ' '
                 for s in rule:
-                    file.write(s + ' ')
-                file.write('\n')
+                    ret += s + ' '
+                ret = ret[:-1]
+                ret += '\n'
+        file.write(ret)
         file.close()
 
     def to_cnf(self):
         self.del_long_rules()
         self.del_eps_rules()
+        self.del_chain_rules()
+        self.del_non_generating_terminals()
+        self.del_nonreachable_terms()
+        self.split_terminals()
+
+    def to_reduced_cnf(self):
+        self.del_long_rules()
         self.del_chain_rules()
         self.del_non_generating_terminals()
         self.del_nonreachable_terms()
