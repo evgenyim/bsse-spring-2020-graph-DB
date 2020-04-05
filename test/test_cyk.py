@@ -32,6 +32,36 @@ def test_cyk():
     assert not cyk(g, 'aaba')
 
 
+def test_cyk_empty():
+    g = Grammar()
+    path = os.path.dirname(__file__) + '/resources/test.txt'
+    g.read_from_file(path)
+    assert cyk(g, '')
+    g2 = Grammar()
+    path = os.path.dirname(__file__) + '/resources/test3.txt'
+    g2.read_from_file(path)
+    assert not cyk(g2, '')
+
+
+def test_cyk_ambigious_grammar():
+    g = Grammar()
+    path = os.path.dirname(__file__) + '/resources/ambiguous_grammar.txt'
+    g.read_from_file(path)
+    assert cyk(g, 'apapa')
+    assert not cyk(g, 'papapa')
+    assert cyk(g, 'amapa')
+    assert not cyk(g, 'aapa')
+
+
+def test_inh_amb_grammar():
+    g = Grammar()
+    path = os.path.dirname(__file__) + '/resources/inh_amb_grammar.txt'
+    g.read_from_file(path)
+    assert cyk(g, 'aabbccdd')
+    assert cyk(g, 'aaabbbcccddd')
+    assert not cyk(g, 'abcccdd')
+
+
 def test_cyk_from_file(capsys):
     g_path = os.path.dirname(__file__) + '/resources/test.txt'
     s_path = os.path.dirname(__file__) + '/resources/s.txt'
@@ -60,6 +90,41 @@ def test_hellings():
                 assert len(rule) == 2
                 assert rule[0].isupper()
                 assert rule[1].isupper()
+
+
+def test_hellings_empty_graph():
+    g = Grammar()
+    g_path = os.path.dirname(__file__) + '/resources/test3.txt'
+    g.read_from_file(g_path)
+    temp = tempfile.NamedTemporaryFile()
+    gr = Graph()
+    gr_path = temp.name
+    gr.read_graph(gr_path)
+    lines = hellings(g, gr)
+    assert lines == []
+
+
+def test_hellings_amb_grammar():
+    g = Grammar()
+    path = os.path.dirname(__file__) + '/resources/ambiguous_grammar.txt'
+    g.read_from_file(path)
+    gr = Graph()
+    gr_path = os.path.dirname(__file__) + '/resources/graph2.txt'
+    gr.read_graph(gr_path)
+    lines = hellings(g, gr)
+    assert sorted(lines) == [('A', '0', '1'), ('A', '0', '2'), ('Q2', '0', '1'), ('Q3', '0', '2')]
+
+
+def test_hellings_inh_amb_grammar():
+    g = Grammar()
+    path = os.path.dirname(__file__) + '/resources/inh_amb_grammar.txt'
+    g.read_from_file(path)
+    gr = Graph()
+    gr_path = os.path.dirname(__file__) + '/resources/graph3.txt'
+    gr.read_graph(gr_path)
+    lines = hellings(g, gr)
+    for N, a, b in lines:
+        assert N != 'S'
 
 
 def test_hellings_from_file():
