@@ -1,4 +1,3 @@
-import io
 import os
 import tempfile
 
@@ -37,10 +36,13 @@ def test_cyk_empty():
     path = os.path.dirname(__file__) + '/resources/test.txt'
     g.read_from_file(path)
     assert cyk(g, '')
-    g2 = Grammar()
+
+
+def test_cyk_empty2():
+    g = Grammar()
     path = os.path.dirname(__file__) + '/resources/test3.txt'
-    g2.read_from_file(path)
-    assert not cyk(g2, '')
+    g.read_from_file(path)
+    assert not cyk(g, '')
 
 
 def test_cyk_ambigious_grammar():
@@ -57,8 +59,11 @@ def test_inh_amb_grammar():
     g = Grammar()
     path = os.path.dirname(__file__) + '/resources/inh_amb_grammar.txt'
     g.read_from_file(path)
+    # Grammar is union of (a^n b^n c^m d^m: n, m > 0) and (a^n b^m c^m d^n: n, m > 0)
     assert cyk(g, 'aabbccdd')
     assert cyk(g, 'aaabbbcccddd')
+    assert cyk(g, 'abbccd')
+    assert cyk(g, 'aabbcccddd')
     assert not cyk(g, 'abcccdd')
 
 
@@ -125,6 +130,19 @@ def test_hellings_inh_amb_grammar():
     lines = hellings(g, gr)
     for N, a, b in lines:
         assert N != 'S'
+
+
+def test_hellings_inh_amb_grammar2():
+    g = Grammar()
+    path = os.path.dirname(__file__) + '/resources/inh_amb_grammar.txt'
+    g.read_from_file(path)
+    gr = Graph()
+    gr_path = os.path.dirname(__file__) + '/resources/graph4.txt'
+    gr.read_graph(gr_path)
+    lines = hellings(g, gr)
+    for N, a, b in lines:
+        if N == 'S':
+            assert a == '0' and b == '3'
 
 
 def test_hellings_from_file():
