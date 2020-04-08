@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 class Grammar:
 
     def __init__(self):
@@ -41,7 +43,7 @@ class Grammar:
         return 'Q' + str(self.added_nonterminals)
 
     def del_long_rules(self):
-        g = self.rules.copy()
+        g = deepcopy(self.rules)
         for left, rules in g.items():
             for rule in rules:
                 a = left
@@ -73,7 +75,6 @@ class Grammar:
 
     def del_eps_rules(self):
         gen_nonterms = self.get_eps_gen_nonterminals()
-        rules_ = self.rules.copy()
         for left, rules in self.rules.items():
             for rule in rules:
                 if len(list(filter(lambda x: x in gen_nonterms, rule))) == 0:
@@ -81,7 +82,7 @@ class Grammar:
                 self.delete_rule(left, rule)
                 self.gen_rules(left, [], rule, gen_nonterms)
         eps_deduced = False
-        for left, rules in rules_.items():
+        for left, rules in self.rules.items():
             for rule in rules:
                 if rule == ['eps']:
                     eps_deduced = True
@@ -140,7 +141,7 @@ class Grammar:
 
     def del_non_generating_terminals(self):
         gen_terms = self.find_gen_terms()
-        rules_ = self.rules.copy()
+        rules_ = deepcopy(self.rules)
         for left, rules in rules_.items():
             if left not in gen_terms:
                 self.rules.pop(left)
@@ -169,7 +170,7 @@ class Grammar:
 
     def del_nonreachable_terms(self):
         reachable_terms = self.find_reachable_terms()
-        rules_ = self.rules.copy()
+        rules_ = deepcopy(self.rules)
         for left, rules in rules_.items():
             if left not in reachable_terms:
                 self.rules.pop(left)
@@ -194,7 +195,7 @@ class Grammar:
         return reachable_terms
 
     def split_terminals(self):
-        rules_ = self.rules.copy()
+        rules_ = deepcopy(self.rules)
         terms_map = {}
         for left, rules in rules_.items():
             for rule in rules:
@@ -228,24 +229,35 @@ class Grammar:
         file = open(file_name, 'w')
         start = self.start
         rules_ = self.rules[start]
+        ret = ''
         for rule in rules_:
-            file.write(start + ' ')
+            ret += start + ' '
             for s in rule:
-                file.write(s + ' ')
-            file.write('\n')
+                ret += s + ' '
+            ret = ret[:-1]
+            ret += '\n'
         for left, rules in self.rules.items():
             if left == start:
                 continue
             for rule in rules:
-                file.write(left + ' ')
+                ret += left + ' '
                 for s in rule:
-                    file.write(s + ' ')
-                file.write('\n')
+                    ret += s + ' '
+                ret = ret[:-1]
+                ret += '\n'
+        file.write(ret)
         file.close()
 
     def to_cnf(self):
         self.del_long_rules()
         self.del_eps_rules()
+        self.del_chain_rules()
+        self.del_non_generating_terminals()
+        self.del_nonreachable_terms()
+        self.split_terminals()
+
+    def to_reduced_cnf(self):
+        self.del_long_rules()
         self.del_chain_rules()
         self.del_non_generating_terminals()
         self.del_nonreachable_terms()
