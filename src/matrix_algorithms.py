@@ -30,16 +30,19 @@ def evalCPFQ(g: Grammar, gr: Graph):
                     data[left] += [True]
     for term in g.nonterminals:
         t[term] = csr_matrix((data[term], (rows[term], cols[term])), shape=(n, n), dtype=bool)
+    good_rules = []
+    for left, rules in g.rules.items():
+        for rule in rules:
+            if len(rule) == 2:
+                good_rules += [(left, rule)]
     changed = True
     while changed:
         changed = False
-        for left, rules in g.rules.items():
-            for rule in rules:
-                if len(rule) == 2 and rule[0].isupper() and rule[1].isupper():
-                    tmp = t[left] + (t[rule[0]] * t[rule[1]])
-                    if (tmp != t[left]).nnz > 0:
-                        t[left] = tmp
-                        changed = True
+        for left, rule in good_rules:
+            tmp = t[left] + (t[rule[0]] * t[rule[1]])
+            if (tmp != t[left]).nnz > 0:
+                t[left] = tmp
+                changed = True
     return t
 
 

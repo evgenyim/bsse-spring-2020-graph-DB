@@ -1,6 +1,5 @@
 import os
 import tempfile
-import numpy as np
 
 from src.matrix_algorithms import *
 
@@ -24,22 +23,24 @@ def test_evalCPFQ():
     m = {}
     for term in g.nonterminals:
         m[term] = t[term].toarray()
-    assert np.array_equal(m['S'], np.array([[False, False, True, True],
-                                            [False, False, True, True],
-                                            [False, False, True, True],
-                                            [False, False, False, False]]))
-    assert np.array_equal(m['A'], np.array([[False, True, False, False],
-                                            [False, False, True, False],
-                                            [True, False, False, False],
-                                            [False, False, False, False]]))
-    assert np.array_equal(m['B'], np.array([[False, False, False, False],
-                                            [False, False, False, False],
-                                            [False, False, False, True],
-                                            [False, False, True, False]]))
-    assert np.array_equal(m['S1'], np.array([[False, False, True, True],
-                                             [False, False, True, True],
-                                             [False, False, True, True],
-                                             [False, False, False, False]]))
+    pairsS = [(0, 2), (0, 3), (1, 2), (1, 3), (2, 2), (2, 3)]
+    pairsA = [(0, 1), (1, 2), (2, 0)]
+    pairsB = [(2, 3), (3, 2)]
+    pairsS1 = [(0, 2), (0, 3), (1, 2), (1, 3), (2, 2), (2, 3)]
+    n = len(gr.vertices)
+    for i in range(n):
+        for j in range(n):
+            for term in g.nonterminals:
+                if term == 'S' and (i, j) in pairsS:
+                    assert m[term].item((i, j))
+                elif term == 'A' and (i, j) in pairsA:
+                    assert m[term].item((i, j))
+                elif term == 'B' and (i, j) in pairsB:
+                    assert m[term].item((i, j))
+                elif term == 'S1' and (i, j) in pairsS1:
+                    assert m[term].item((i, j))
+                else:
+                    assert not m[term].item((i, j))
 
 
 def test_evalCPFQ_empty_graph():
