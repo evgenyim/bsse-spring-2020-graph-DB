@@ -1,3 +1,5 @@
+scipy
+numpy
 grammpy
 pytest>=4.2.1
 rdflib>=4.2.2

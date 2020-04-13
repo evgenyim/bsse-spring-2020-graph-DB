@@ -16,7 +16,7 @@ class Graph:
             if v1 not in self.vertices:
                 self.vertices.add(v1)
             if v2 not in self.vertices:
-                self.vertices.add(v1)
+                self.vertices.add(v2)
             self.edges += [(v1, label, v2)]
 
 
