@@ -3,4 +3,4 @@ numpy
 grammpy
 pytest>=4.2.1
 rdflib>=4.2.2
-pyformlang==0.1.16
+pyformlang>=0.1.16
