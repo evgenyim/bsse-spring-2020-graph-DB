@@ -7,7 +7,7 @@ def test_str_to_dfa():
     dfa1 = str_to_dfa(str1)
     assert(len(dfa1.states) == 2)
     assert(len(dfa1.final_states) == 1)
-    assert(len(dfa1.to_networkx().edges) == 4)
+    assert(len(dfa1.to_networkx().edges) == 5)
     assert(dfa1.accepts('00010101'))
     assert(not dfa1.accepts('000'))
 
@@ -15,7 +15,7 @@ def test_str_to_dfa():
     dfa2 = str_to_dfa(str2)
     assert (len(dfa2.states) == 3)
     assert (len(dfa2.final_states) == 1)
-    assert (len(dfa2.to_networkx().edges) == 6)
+    assert (len(dfa2.to_networkx().edges) == 7)
     assert (dfa2.accepts('11010101'))
     assert (not dfa2.accepts('10000'))
 
@@ -26,7 +26,7 @@ def test_intersection_dfa():
     dfa3 = dfa1.get_intersection(dfa2)
     assert (len(dfa3.states) == 5)
     assert (len(dfa3.final_states) == 1)
-    assert (len(dfa3.to_networkx().edges) == 10)
+    assert (len(dfa3.to_networkx().edges) == 11)
     assert (dfa3.accepts('001001010'))
     assert (dfa3.accepts('111001001'))
 
