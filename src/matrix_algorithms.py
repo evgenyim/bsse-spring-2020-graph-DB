@@ -3,7 +3,7 @@ from src.cyk import Graph
 from scipy.sparse import *
 
 
-def evalCPFQ(g: Grammar, gr: Graph):
+def evalCFPQ(g: Grammar, gr: Graph):
     g.to_reduced_cnf()
     n = len(gr.vertices)
     t = {}
@@ -46,12 +46,12 @@ def evalCPFQ(g: Grammar, gr: Graph):
     return t
 
 
-def evalCPFQ_from_file(grammar_file, graph_file, output_file):
+def evalCFPQ_from_file(grammar_file, graph_file, output_file):
     g = Grammar()
     g.read_from_file(grammar_file)
     gr = Graph()
     gr.read_graph(graph_file)
-    t = evalCPFQ(g, gr)
+    t = evalCFPQ(g, gr)
     g.print_grammar(output_file)
     m = t[g.start].toarray()
     out_file = open(output_file, 'a')

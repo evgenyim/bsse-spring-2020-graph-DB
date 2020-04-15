@@ -4,14 +4,14 @@ import tempfile
 from src.matrix_algorithms import *
 
 
-def test_evalCPFQ():
+def test_evalCFPQ():
     g = Grammar()
     g_path = os.path.dirname(__file__) + '/resources/test3.txt'
     g.read_from_file(g_path)
     gr = Graph()
     gr_path = os.path.dirname(__file__) + '/resources/graph.txt'
     gr.read_graph(gr_path)
-    t = evalCPFQ(g, gr)
+    t = evalCFPQ(g, gr)
     for left, rules in g.rules.items():
         for rule in rules:
             if len(rule) == 1:
@@ -43,7 +43,7 @@ def test_evalCPFQ():
                     assert not m[term].item((i, j))
 
 
-def test_evalCPFQ_empty_graph():
+def test_evalCFPQ_empty_graph():
     g = Grammar()
     g_path = os.path.dirname(__file__) + '/resources/test3.txt'
     g.read_from_file(g_path)
@@ -51,18 +51,18 @@ def test_evalCPFQ_empty_graph():
     gr = Graph()
     gr_path = temp.name
     gr.read_graph(gr_path)
-    t = evalCPFQ(g, gr)
+    t = evalCFPQ(g, gr)
     assert t['S'].toarray().size == 0
 
 
-def test_evalCPFQ_amb_grammar():
+def test_evalCFPQ_amb_grammar():
     g = Grammar()
     path = os.path.dirname(__file__) + '/resources/ambiguous_grammar.txt'
     g.read_from_file(path)
     gr = Graph()
     gr_path = os.path.dirname(__file__) + '/resources/graph2.txt'
     gr.read_graph(gr_path)
-    t = evalCPFQ(g, gr)
+    t = evalCFPQ(g, gr)
     m = {}
     for term in g.nonterminals:
         m[term] = t[term].toarray()
@@ -83,14 +83,14 @@ def test_evalCPFQ_amb_grammar():
                     assert not m[term].item((i, j))
 
 
-def test_evalCPFQ_inh_amb_grammar():
+def test_evalCFPQ_inh_amb_grammar():
     g = Grammar()
     path = os.path.dirname(__file__) + '/resources/inh_amb_grammar.txt'
     g.read_from_file(path)
     gr = Graph()
     gr_path = os.path.dirname(__file__) + '/resources/graph3.txt'
     gr.read_graph(gr_path)
-    t = evalCPFQ(g, gr)
+    t = evalCFPQ(g, gr)
     m = {}
     for term in g.nonterminals:
         m[term] = t[term].toarray()
@@ -100,14 +100,14 @@ def test_evalCPFQ_inh_amb_grammar():
             assert not m['S'].item((i, j))
 
 
-def test_evalCPFQ_inh_amb_grammar2():
+def test_evalCFPQ_inh_amb_grammar2():
     g = Grammar()
     path = os.path.dirname(__file__) + '/resources/inh_amb_grammar.txt'
     g.read_from_file(path)
     gr = Graph()
     gr_path = os.path.dirname(__file__) + '/resources/graph4.txt'
     gr.read_graph(gr_path)
-    t = evalCPFQ(g, gr)
+    t = evalCFPQ(g, gr)
     m = {}
     for term in g.nonterminals:
         m[term] = t[term].toarray()
@@ -120,11 +120,11 @@ def test_evalCPFQ_inh_amb_grammar2():
                 assert not m['S'].item((i, j))
 
 
-def test_evalCPFQ_from_file():
+def test_evalCFPQ_from_file():
     g_path = os.path.dirname(__file__) + '/resources/test3.txt'
     gr_path = os.path.dirname(__file__) + '/resources/graph.txt'
     key_path = os.path.dirname(__file__) + '/resources/test_key_evalCPFQ.txt'
     temp = tempfile.NamedTemporaryFile()
-    evalCPFQ_from_file(g_path, gr_path, temp.name)
+    evalCFPQ_from_file(g_path, gr_path, temp.name)
     assert open(temp.name).readlines() == open(key_path).readlines()
 
