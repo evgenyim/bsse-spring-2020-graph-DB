@@ -211,7 +211,3 @@ def evalCFPQ_tensor_from_file(grammar_file, graph_file, output_file):
         for j in range(n):
             if m[i][j] == 1:
                 out_file.write(str(i) + ' ' + str(j) + '\n')
-
-evalCFPQ_tensor_from_file("/home/evgeny/spdu/formal-languages/bsse-spring-2020-graph-DB//test/resources/test_tensor.txt",
-                           "/home/evgeny/spdu/formal-languages/bsse-spring-2020-graph-DB/test/resources/graph.txt",
-                           "/home/evgeny/spdu/formal-languages/bsse-spring-2020-graph-DB/output.txt")

@@ -241,4 +241,3 @@ def test_evalCFPQ_tensor_from_file():
     temp = tempfile.NamedTemporaryFile()
     evalCFPQ_tensor_from_file(g_path, gr_path, temp.name)
     assert open(temp.name).readlines() == open(key_path).readlines()
-

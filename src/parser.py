@@ -25,5 +25,3 @@ p = Lark(gr)
 
 def parse_line(line):
     return p.parse(line)
-
-parse_line("S S1 | S2")
