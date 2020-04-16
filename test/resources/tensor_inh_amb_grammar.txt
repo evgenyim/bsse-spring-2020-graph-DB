@@ -1,0 +1,6 @@
+S S1 | S2
+S1 X Y
+X a X b | a b
+Y c Y d | c d
+S2 a S d | a Z d
+Z b Z c | b c
