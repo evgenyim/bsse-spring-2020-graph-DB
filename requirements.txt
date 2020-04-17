@@ -1,3 +1,4 @@
+lark-parser
 scipy
 numpy
 grammpy

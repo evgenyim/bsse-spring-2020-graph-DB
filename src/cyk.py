@@ -100,13 +100,15 @@ def hellings(g: Grammar, gr: Graph):
 
 def hellings_from_file(grammar_file, graph_file, output_file):
     g = Grammar()
-    g.read_from_file(grammar_file)
+    g.read_hard_from_file(grammar_file)
     gr = Graph()
     gr.read_graph(graph_file)
     lines = hellings(g, gr)
     g.print_grammar(output_file)
     out_file = open(output_file, 'a')
-    out_file.write('\n')
+    s = '\n'
     for line in lines:
         if line[0] == g.start:
-            out_file.write(line[1] + ' ' + line[2] + '\n')
+            s += line[1] + ' ' + line[2] + '\n'
+    out_file.write(s)
+
