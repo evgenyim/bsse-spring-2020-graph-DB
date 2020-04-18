@@ -52,7 +52,7 @@ def evalCFPQ(g: Grammar, gr: Graph):
 
 def evalCFPQ_from_file(grammar_file, graph_file, output_file):
     g = Grammar()
-    g.read_hard_from_file(grammar_file)
+    g.read_from_file(grammar_file)
     gr = Graph()
     gr.read_graph(graph_file)
     t = evalCFPQ(g, gr)
