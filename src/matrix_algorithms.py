@@ -52,7 +52,7 @@ def evalCFPQ(g: Grammar, gr: Graph):
 
 def evalCFPQ_from_file(grammar_file, graph_file, output_file):
     g = Grammar()
-    g.read_hard_from_file(grammar_file)
+    g.read_from_file(grammar_file)
     gr = Graph()
     gr.read_graph(graph_file)
     t = evalCFPQ(g, gr)
@@ -235,3 +235,11 @@ def evalCFPQ_tensor_from_file(grammar_file, graph_file, output_file):
             if m[i][j] == 1:
                 w += str(i) + ' ' + str(j) + '\n'
     out_file.write(w)
+
+import time
+start_time = time.time()
+evalCFPQ_from_file("/home/evgeny/Downloads/DataForFLCourse/WorstCase/grammars/g1",
+                   "/home/evgeny/Downloads/DataForFLCourse/WorstCase/graphs/worstcase_4",
+                   "/home/evgeny/spdu/formal-languages/bsse-spring-2020-graph-DB/output2.txt")
+
+print("--- %s seconds ---" % (time.time() - start_time))

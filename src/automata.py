@@ -12,8 +12,8 @@ def str_to_dfa(s):
 def str_to_graph(s):
     r = Regex(s)
     a = r.to_epsilon_nfa().minimize()
-    start_states = sorted(list(a.start_states))
-    final_states = sorted(list(a.final_states))
+    start_states = list(a.start_states)
+    final_states = list(a.final_states)
     g = a.to_networkx()
     g2 = nx.convert_node_labels_to_integers(g, ordering="sorted")
     d = {}
