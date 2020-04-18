@@ -111,11 +111,3 @@ def hellings_from_file(grammar_file, graph_file, output_file):
         if line[0] == g.start:
             s += line[1] + ' ' + line[2] + '\n'
     out_file.write(s)
-
-import time
-start_time = time.time()
-hellings_from_file("/home/evgeny/Downloads/DataForFLCourse/WorstCase/grammars/g1",
-                   "/home/evgeny/Downloads/DataForFLCourse/WorstCase/graphs/worstcase_256",
-                   "/home/evgeny/spdu/formal-languages/bsse-spring-2020-graph-DB/output2.txt")
-
-print("--- %s seconds ---" % (time.time() - start_time))
