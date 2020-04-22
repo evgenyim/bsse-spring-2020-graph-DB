@@ -22,13 +22,13 @@ def test_cyk():
     g = Grammar()
     path = os.path.dirname(__file__) + '/resources/test.txt'
     g.read_from_file(path)
-    assert cyk(g, 'ab')
-    assert cyk(g, 'aabb')
-    assert cyk(g, 'abab')
-    assert cyk(g, 'aabaabbb')
+    assert cyk(g, 'a b')
+    assert cyk(g, 'a a b b')
+    assert cyk(g, 'a b a b')
+    assert cyk(g, 'a a b a a b b b')
     assert not cyk(g, 'a')
-    assert not cyk(g, 'aba')
-    assert not cyk(g, 'aaba')
+    assert not cyk(g, 'a b a')
+    assert not cyk(g, 'a a b a')
 
 
 def test_cyk_empty():
@@ -49,10 +49,10 @@ def test_cyk_ambigious_grammar():
     g = Grammar()
     path = os.path.dirname(__file__) + '/resources/ambiguous_grammar.txt'
     g.read_from_file(path)
-    assert cyk(g, 'apapa')
-    assert not cyk(g, 'papapa')
-    assert cyk(g, 'amapa')
-    assert not cyk(g, 'aapa')
+    assert cyk(g, 'a p a p a')
+    assert not cyk(g, 'p a p a p a')
+    assert cyk(g, 'a m a p a')
+    assert not cyk(g, 'a a p a')
 
 
 def test_inh_amb_grammar():
@@ -60,11 +60,11 @@ def test_inh_amb_grammar():
     path = os.path.dirname(__file__) + '/resources/inh_amb_grammar.txt'
     g.read_from_file(path)
     # Grammar is union of (a^n b^n c^m d^m: n, m > 0) and (a^n b^m c^m d^n: n, m > 0)
-    assert cyk(g, 'aabbccdd')
-    assert cyk(g, 'aaabbbcccddd')
-    assert cyk(g, 'abbccd')
-    assert cyk(g, 'aabbcccddd')
-    assert not cyk(g, 'abcccdd')
+    assert cyk(g, 'a a b b c c d d')
+    assert cyk(g, 'a a a b b b c c c d d d')
+    assert cyk(g, 'a b b c c d')
+    assert cyk(g, 'a a b b c c c d d d')
+    assert not cyk(g, 'a b c c c d d')
 
 
 def test_cyk_from_file(capsys):

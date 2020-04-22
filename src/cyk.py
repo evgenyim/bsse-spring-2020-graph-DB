@@ -31,6 +31,7 @@ def cyk(g: Grammar, s: str):
         return deduce_eps
     g.to_cnf()
     d = []
+    s = s.split()
     n = len(s)
     for i in range(n):
         d += [[]]
@@ -39,7 +40,7 @@ def cyk(g: Grammar, s: str):
     for i in range(n):
         for left, rules in g.rules.items():
             for rule in rules:
-                if s[i] in rule and len(rule) == 1:
+                if s[i] in rule:
                     d[i][i] += [left]
     for m in range(1, n):
         for i in range(n):
@@ -57,7 +58,7 @@ def cyk_from_file(g_file, s_file):
     g = Grammar()
     g.read_from_file(g_file)
     s_f = open(s_file)
-    s = s_f.readline().replace(' ', '')
+    s = s_f.readline().replace('\n', ' ')
     print(cyk(g, s))
 
 
