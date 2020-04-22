@@ -153,3 +153,19 @@ def test_hellings_from_file():
     hellings_from_file(g_path, gr_path, temp.name)
     assert open(temp.name).readlines() == open(key_path).readlines()
 
+
+def test_cyk_my_grammar():
+    g = Grammar()
+    path = os.path.dirname(__file__) + '/resources/Grammar.txt'
+    g.read_from_file(path)
+    str_path = os.path.dirname(__file__) + '/resources/GrammarS.txt'
+    s = open(str_path)
+    s = s.readlines()
+    assert cyk_my_grammar(g, s)
+    assert cyk_my_grammar(g, [''])
+    assert not cyk_my_grammar(g, ['KW_CONNECT KW_TO STRING'])
+
+
+def test_cyk_my_grammar_from_file():
+    str_path = os.path.dirname(__file__) + '/resources/GrammarS.txt'
+    assert cyk_my_grammar_from_file(str_path)
