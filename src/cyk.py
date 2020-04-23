@@ -115,22 +115,13 @@ def hellings_from_file(grammar_file, graph_file, output_file):
     out_file.write(s)
 
 
-def cyk_my_grammar(g, s):
-    for i in range(len(s)):
-        s[i] = s[i].replace('\n', ' ')
-        s[i] = s[i].split()
-        for j in range(len(s[i])):
-            if s[i][j][0].isupper():
-                s[i][j] = s[i][j].lower()
-        s[i] = ' '.join(s[i])
-    s = ' '.join(s)
-    return cyk(g, s)
-
-
-def cyk_my_grammar_from_file(str_file):
+def cyk_my_grammar(str_file):
     g = Grammar()
     path = os.path.dirname(__file__) + '/resources/Grammar.txt'
     g.read_from_file(path)
     s = open(str_file)
     s = s.readlines()
-    return cyk_my_grammar(g, s)
+    for i in range(len(s)):
+        s[i] = s[i].replace('\n', ' ')
+    s = ' '.join(s)
+    return cyk(g, s)

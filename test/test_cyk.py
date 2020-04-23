@@ -155,17 +155,43 @@ def test_hellings_from_file():
 
 
 def test_cyk_my_grammar():
-    g = Grammar()
-    path = os.path.dirname(__file__) + '/resources/Grammar.txt'
-    g.read_from_file(path)
-    str_path = os.path.dirname(__file__) + '/resources/GrammarS.txt'
-    s = open(str_path)
-    s = s.readlines()
-    assert cyk_my_grammar(g, s)
-    assert cyk_my_grammar(g, [''])
-    assert not cyk_my_grammar(g, ['KW_CONNECT KW_TO STRING'])
+    str_path = os.path.dirname(__file__) + '/resources/s_for_my_grammar_1.txt'
+    assert cyk_my_grammar(str_path)
 
 
-def test_cyk_my_grammar_from_file():
-    str_path = os.path.dirname(__file__) + '/resources/GrammarS.txt'
-    assert cyk_my_grammar_from_file(str_path)
+def test_cyk_my_grammar2():
+    str_path = os.path.dirname(__file__) + '/resources/s_for_my_grammar_2.txt'
+    assert cyk_my_grammar(str_path)
+
+
+def test_cyk_my_grammar3():
+    temp = tempfile.NamedTemporaryFile()
+    f = open(temp.name, 'w')
+    f.write('kw_connect kw_to string semi')
+    f.close()
+    assert cyk_my_grammar(temp.name)
+
+
+def test_cyk_my_grammar4():
+    temp = tempfile.NamedTemporaryFile()
+    f = open(temp.name, 'w')
+    f.write('kw_list kw_all kw_graphs semi')
+    f.close()
+    assert cyk_my_grammar(temp.name)
+
+
+def test_cyk_my_grammar_select_stmt():
+    temp = tempfile.NamedTemporaryFile()
+    f = open(temp.name, 'w')
+    f.write('kw_select ident kw_from string kw_where lbr ident rbr '
+            'op_minus nt_name op_star mid ident op_q op_arrow lbr ident dot kw_id op_eq int rbr semi')
+    f.close()
+    assert cyk_my_grammar(temp.name)
+
+
+def test_cyk_my_grammar_named_pattern_stmt():
+    temp = tempfile.NamedTemporaryFile()
+    f = open(temp.name, 'w')
+    f.write('nt_name op_eq ident op_plus mid lbr ident op_star mid ident rbr semi')
+    f.close()
+    assert cyk_my_grammar(temp.name)

@@ -1,18 +1,18 @@
 В этом файле описывается язык запросов.
-Скрипт может быть пустым, или состоять из строчек вида:
+Скрипт должен соответствовать лексике, описанной ниже. Исходно он выглядит как 
+````<script>````, ```eps``` - это пустая строка.
 ```
-<statement>;
-```
-Вот как могут выглядеть выражения в языке:
-```
-statement: CONNECT TO [<file_name>]
-            | LIST ALL GRAPHS
-            | SELECT <obj> FROM [<file_name>] WHERE <where_expr>
+script: eps
+            | <statement>; <script>
+
+statement: connect to [<dir_name>]
+            | list all graphs
+            | select <obj> from [<file_name>] where <where_expr>
             | <NT_NAME> = <pattern>
 
 obj: <vertices>
-    | COUNT <vertices>
-    | EXISTS <vertices>
+    | count <vertices>
+    | exists <vertices>
 
 vertices: ( <ID> , <ID> )
             | <ID>
@@ -23,10 +23,11 @@ v_expr: <ID>
         | _ 
         | <ID>.ID = INT
 
-regexp: <seq>
+regexp: <seq_elem>
+        | <seq_elem> | <regexp>                   - второй '|' это символ
+
+seq_elem: <seq>
         | ()
-        | <seq> | <regexp>
-        | () | <regexp>
 
 seq: <elem>
       | <elem> seq
@@ -43,17 +44,21 @@ prim_pattern: <ID>
 ID: [a-z][a-z]*
 
 NT_NAME: [A_Z][a-z]*
+
+dir_name - абсолютный путь к директории
+
+file_name - абсолютный путь к файлу
 ``` 
 
 Пример:
 ```
-CONNECT TO [/home/user/graph];
+connect to [/home/user/graph];
 S = a S b S | () ;
-SELECT COUNT u FROM [/hime/user/g1.txt] WHERE (v.ID = 10) - S -> (u)
+select count u from [/hime/user/g1.txt] where (v.ID = 10) - S -> (u);
 ```
 Или:
 ```
-CONNECT TO [/home/user/graph];
+connect to [/home/user/graph];
 S = a S b;
-SELECT EXISTS (a , b) FROM [/home/user/g1] WHERE (_) - S -> (a)
+select exists (a , b) from [/home/user/g1] where (_) - S -> (a);
 ```

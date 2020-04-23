@@ -1,0 +1,6 @@
+kw_connect kw_to string semi
+nt_name op_eq ident nt_name ident semi
+kw_select kw_count ident
+kw_from string
+kw_where lbr ident dot kw_id op_eq int rbr
+op_minus nt_name op_arrow lbr ident rbr semi

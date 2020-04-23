@@ -1,7 +1,7 @@
 SCRIPT eps
 SCRIPT STMT semi SCRIPT
 STMT kw_connect kw_to string
-STMT kw_list kw_all kw_graph
+STMT kw_list kw_all kw_graphs
 STMT SELECT_STMT
 STMT NAMED_PATTERN_STMT
 NAMED_PATTERN_STMT nt_name op_eq PATTERN
@@ -11,7 +11,7 @@ OBJ_EXPR kw_count VS_INFO
 OBJ_EXPR kw_exists VS_INFO
 VS_INFO lbr ident comma ident rbr
 VS_INFO ident
-WHERE_EXPR lbr V_EXPR rbr op_minus PATTERN op_minus op_gr lbr V_EXPR rbr
+WHERE_EXPR lbr V_EXPR rbr op_minus PATTERN op_arrow lbr V_EXPR rbr
 V_EXPR ident
 V_EXPR underscore
 V_EXPR ident dot kw_id op_eq int
