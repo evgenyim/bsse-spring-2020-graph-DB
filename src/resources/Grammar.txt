@@ -1,0 +1,30 @@
+SCRIPT eps
+SCRIPT STMT semi SCRIPT
+STMT kw_connect kw_to string
+STMT kw_list kw_all kw_graphs
+STMT SELECT_STMT
+STMT NAMED_PATTERN_STMT
+NAMED_PATTERN_STMT nt_name op_eq PATTERN
+SELECT_STMT kw_select OBJ_EXPR kw_from string kw_where WHERE_EXPR
+OBJ_EXPR VS_INFO
+OBJ_EXPR kw_count VS_INFO
+OBJ_EXPR kw_exists VS_INFO
+VS_INFO lbr ident comma ident rbr
+VS_INFO ident
+WHERE_EXPR lbr V_EXPR rbr op_minus PATTERN op_arrow lbr V_EXPR rbr
+V_EXPR ident
+V_EXPR underscore
+V_EXPR ident dot kw_id op_eq int
+PATTERN ALT_ELEM
+PATTERN ALT_ELEM mid PATTERN
+ALT_ELEM SEQ
+ALT_ELEM lbr rbr
+SEQ SEQ_ELEM
+SEQ SEQ_ELEM SEQ
+SEQ_ELEM PRIM_PATTERN
+SEQ_ELEM PRIM_PATTERN op_star
+SEQ_ELEM PRIM_PATTERN op_plus
+SEQ_ELEM PRIM_PATTERN op_q
+PRIM_PATTERN ident
+PRIM_PATTERN nt_name
+PRIM_PATTERN lbr PATTERN rbr

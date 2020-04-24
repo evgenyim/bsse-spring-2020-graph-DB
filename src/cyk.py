@@ -1,3 +1,4 @@
+import os
 from src.grammar import Grammar
 
 
@@ -58,7 +59,7 @@ def cyk_from_file(g_file, s_file):
     g = Grammar()
     g.read_from_file(g_file)
     s_f = open(s_file)
-    s = s_f.readline().replace('\n', ' ')
+    s = s_f.readline()
     print(cyk(g, s))
 
 
@@ -112,3 +113,15 @@ def hellings_from_file(grammar_file, graph_file, output_file):
         if line[0] == g.start:
             s += line[1] + ' ' + line[2] + '\n'
     out_file.write(s)
+
+
+def cyk_my_grammar(str_file):
+    g = Grammar()
+    path = os.path.dirname(__file__) + '/resources/Grammar.txt'
+    g.read_from_file(path)
+    s = open(str_file)
+    s = s.readlines()
+    for i in range(len(s)):
+        s[i] = s[i].replace('\n', ' ')
+    s = ' '.join(s)
+    return cyk(g, s)

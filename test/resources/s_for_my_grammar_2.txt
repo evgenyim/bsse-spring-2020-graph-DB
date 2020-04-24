@@ -1,0 +1,6 @@
+kw_connect kw_to string semi
+nt_name op_eq ident nt_name ident mid lbr rbr semi
+kw_select kw_exists lbr ident comma ident rbr
+kw_from string
+kw_where lbr underscore rbr
+op_minus nt_name op_arrow lbr ident rbr semi
