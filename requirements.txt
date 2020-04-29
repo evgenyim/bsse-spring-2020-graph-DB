@@ -1,7 +1,7 @@
+antlr4-python3-runtime==4.7.2
 lark-parser
 scipy
 numpy
 grammpy
 pytest>=4.2.1
-rdflib>=4.2.2
 pyformlang>=0.1.16
