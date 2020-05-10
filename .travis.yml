@@ -1,7 +1,8 @@
 language: python
+dist: bionic
 before_install:
   - sudo apt-get update
-  - sudo apt-get install antlr4=4.7.2-1~16.04
+  - sudo apt-get install antlr4
 install:
   - pip3 install -r requirements.txt
 script:
