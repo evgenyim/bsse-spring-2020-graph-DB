@@ -1,7 +1,7 @@
 from antlr4 import *
 from antlr.GrammarLexer import GrammarLexer
 from antlr.GrammarParser import GrammarParser
-from antlr.GrammarListener import GrammarListener
+from antlr.MyGrammarListener import MyGrammarListener
 from antlr.GrammarErrorListener import MyErrorListener
 
 
@@ -15,7 +15,7 @@ def read_from_file(file_name):
         tree = parser.complete_script()
         print('Script is correct')
         walker = ParseTreeWalker()
-        collector = GrammarListener()
+        collector = MyGrammarListener()
         walker.walk(collector, tree)
         listener_to_dot(collector)
         return tree
@@ -34,3 +34,5 @@ def listener_to_dot(listener):
             f.write('\t {} -> {};\n'.format(left, v))
     f.write('}')
     f.close()
+
+read_from_file('/home/evgeny/spdu/formal-languages/bsse-spring-2020-graph-DB/s.txt')

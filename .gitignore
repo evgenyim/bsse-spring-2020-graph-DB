@@ -3,3 +3,8 @@ venv/*
 _*
 .*
 *.txt
+antlr/Grammar.interp
+antlr/Grammar.tokens
+antlr/GrammarLexer*
+antlr/GrammarListener.py
+antlr/GrammarParser.py
