@@ -34,5 +34,3 @@ def listener_to_dot(listener):
             f.write('\t {} -> {};\n'.format(left, v))
     f.write('}')
     f.close()
-
-read_from_file('/home/evgeny/spdu/formal-languages/bsse-spring-2020-graph-DB/s.txt')
