@@ -1,0 +1,3 @@
+connect to [asdaa];
+S = a S b S | () ;
+select exists (u ,v) from [sdfdsf] where (_) - S -> (u);

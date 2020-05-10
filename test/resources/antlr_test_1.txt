@@ -1,0 +1,3 @@
+connect to [asdaa];
+S = a S b S | () ;
+select count u from [sdfdsf] where (v.ID = 10) - S -> (u);
