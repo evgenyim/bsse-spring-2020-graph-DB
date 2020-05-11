@@ -21,3 +21,5 @@ Run tests
 ```
 python3 -m pytest
 ```
+
+You need ```antlr4``` version ```4.7.2``` to be installed
