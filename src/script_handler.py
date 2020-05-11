@@ -155,7 +155,7 @@ class ScriptHandler(ParseTreeListener):
             self.list_all_graphs()
 
     def list_all_graphs(self):
-        for file in os.listdir(self.graphs_path):
+        for file in sorted(os.listdir(self.graphs_path)):
             cur_file = open(self.graphs_path + '/' + file)
             self.print_file(file, cur_file)
             cur_file.close()
