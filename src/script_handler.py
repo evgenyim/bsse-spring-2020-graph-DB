@@ -9,7 +9,6 @@ from src.cyk import Graph
 
 from antlr.GrammarLexer import GrammarLexer
 from antlr.GrammarParser import GrammarParser
-from antlr.MyGrammarListener import MyGrammarListener
 from antlr.GrammarErrorListener import MyErrorListener
 
 
@@ -44,7 +43,7 @@ class ScriptHandler(ParseTreeListener):
             if ctx.children[0].symbol.text == 'connect':
                 self.handle_connect_stmt(ctx)
             elif ctx.children[0].symbol.text == 'list':
-                self.handle_list_stmt(ctx)
+                self.handle_list_stmt()
 
     def exitStmt(self, ctx: GrammarParser.StmtContext):
         pass
@@ -120,9 +119,8 @@ class ScriptHandler(ParseTreeListener):
             self.cur_right = ''
 
     def enterAlt_elem(self, ctx: GrammarParser.Alt_elemContext):
-        if type(ctx.children[0]) is TerminalNodeImpl and type(ctx.children[1]) is TerminalNodeImpl:
-            if ctx.children[0].symbol.text == '(' and ctx.children[1].symbol.text == ')':
-                self.cur_right += 'eps '
+        if type(ctx.children[0]) is TerminalNodeImpl:
+            self.cur_right += 'eps '
 
     def exitAlt_elem(self, ctx: GrammarParser.Alt_elemContext):
         if len(ctx.parentCtx.children) > 1:
@@ -146,15 +144,9 @@ class ScriptHandler(ParseTreeListener):
             self.cur_right += ') '
 
     def handle_connect_stmt(self, ctx: GrammarParser.StmtContext):
-        if ctx.children[0].symbol.text == 'connect' and ctx.children[1].symbol.text == 'to':
-            self.graphs_path = ctx.children[2].symbol.text[1:-1]
+        self.graphs_path = ctx.children[2].symbol.text[1:-1]
 
-    def handle_list_stmt(self, ctx: GrammarParser.StmtContext):
-        if ctx.children[0].symbol.text == 'list' and ctx.children[1].symbol.text == 'all' and \
-                ctx.children[2].symbol.text == 'graphs':
-            self.list_all_graphs()
-
-    def list_all_graphs(self):
+    def handle_list_stmt(self):
         for file in sorted(os.listdir(self.graphs_path)):
             cur_file = open(self.graphs_path + '/' + file)
             self.print_file(file, cur_file)
@@ -180,72 +172,72 @@ class ScriptHandler(ParseTreeListener):
            (self.finish_v not in self.vs and self.finish_v != '_'):
             raise Exception('wrong vertice name')
         t = evalCFPQ(new_g, gr)
-        ret = False
         m = t[new_g.start].toarray()
         if len(self.vs) == 1:
-            is_start = self.start_v == self.vs[0]
-            is_finish = self.finish_v == self.vs[0]
-
-            if is_start and is_finish:
-                for i in range(vs_len):
-                    if m[i][i] == 1:
-                        ret = True
-            elif is_start and self.start_id is not None:
-                i = self.start_id
-                if self.finish_id is None:
-                    for j in range(vs_len):
-                        if m[i][j] == 1:
-                            ret = True
-                else:
-                    ret = m[i][self.finish_id] == 1
-            elif is_finish and self.finish_id is not None:
-                j = self.finish_id
-                if self.start_id is None:
-                    for i in range(vs_len):
-                        if m[i][j] == 1:
-                            ret = True
-                else:
-                    ret = m[self.start_id][j] == 1
-            elif is_start:
-                if self.finish_id is None:
-                    for i in range(vs_len):
-                        for j in range(vs_len):
-                            if m[i][j] == 1:
-                                ret = True
-                else:
-                    j = self.finish_id
-                    for i in range(vs_len):
-                        if m[i][j] == 1:
-                            ret = True
-            elif is_finish:
-                if self.start_id is None:
-                    for i in range(vs_len):
-                        for j in range(vs_len):
-                            if m[i][j] == 1:
-                                ret = True
-                else:
-                    j = self.start_id
-                    for i in range(vs_len):
-                        if m[i][j] == 1:
-                            ret = True
+            ret = self.handle_exists_v(m, vs_len)
         else:
-            if self.start_id is not None and self.finish_id is not None:
-                ret = m[self.start_id][self.finish_id]
-            elif self.start_v in self.vs and self.finish_v in self.vs:
-                if self.start_id is not None:
-                    for j in range(vs_len):
-                        if m[self.start_id][j] == 1:
-                            ret = True
-                elif self.finish_id is not None:
-                    for i in range(vs_len):
-                        if m[i][self.finish_id] == 1:
-                            ret = True
-                else:
-                    for i in range(vs_len):
-                        for j in range(vs_len):
-                            if m[i][j] == 1:
-                                ret = True
+            ret = self.handle_exists_pair(m, vs_len)
         print(ret)
+
+    def handle_exists_v(self, m, vs_len):
+        is_start = self.start_v == self.vs[0]
+        is_finish = self.finish_v == self.vs[0]
+
+        if is_start and is_finish:
+            for i in range(vs_len):
+                if m[i][i] == 1:
+                    return True
+        elif is_start and self.start_id is not None:
+            if self.finish_id is None:
+                return self.check_row(m, vs_len, self.start_id)
+            else:
+                return m[self.start_id][self.finish_id] == 1
+        elif is_finish and self.finish_id is not None:
+            if self.start_id is None:
+                return self.check_column(m, vs_len, self.finish_id)
+            else:
+                return m[self.start_id][self.finish_id] == 1
+        elif is_start:
+            if self.finish_id is None:
+                return self.check_all(m, vs_len)
+            else:
+                return self.check_column(m, vs_len, self.start_id)
+        elif is_finish:
+            if self.start_id is None:
+                return self.check_all(m, vs_len)
+            else:
+                return self.check_column(m, vs_len, self.start_id)
+
+    def handle_exists_pair(self, m, vs_len):
+        if self.start_id is not None and self.finish_id is not None:
+            return m[self.start_id][self.finish_id] == 1
+        elif self.start_v in self.vs and self.finish_v in self.vs:
+            if self.start_id is not None:
+                return self.check_row(m, vs_len, self.start_id)
+            elif self.finish_id is not None:
+                for i in range(vs_len):
+                    return self.check_column(m, vs_len, self.finish_id)
+            else:
+                return self.check_all(m, vs_len)
+
+    def check_all(self, m, vs_len):
+        for i in range(vs_len):
+            for j in range(vs_len):
+                if m[i][j] == 1:
+                    return True
+        return False
+
+    def check_row(self, m, vs_len, i):
+        for j in range(vs_len):
+            if m[i][j] == 1:
+                return True
+        return False
+
+    def check_column(self, m, vs_len, j):
+        for i in range(vs_len):
+            if m[i][j] == 1:
+                return True
+        return False
 
     def print_file(self, name, lines):
         print('FILE ' + name + ':')
