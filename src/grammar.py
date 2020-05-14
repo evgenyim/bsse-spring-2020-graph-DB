@@ -1,7 +1,7 @@
 from copy import deepcopy
 from lark.tree import *
 from lark.lexer import Token
-from src.parser import parse_line
+from src.parser import parse_line, parse_antlr_line
 
 class Grammar:
 
@@ -234,7 +234,7 @@ class Grammar:
         self.split_hard_lines(lines)
 
     def split_hard_lines(self, lines):
-        start_symb = ''
+        start_symb = self.start
         for line in lines:
             tree = parse_line(line)
             term = tree.children[0]
@@ -242,6 +242,13 @@ class Grammar:
                 start_symb = term.value
                 self.start = term.value
             self.add_rule(term.value, self.split_tree(tree.children[1]))
+
+    def add_antlr_rule(self, line):
+        tree = parse_antlr_line(line)
+        term = tree.children[0]
+        if self.start == '':
+            self.start = term.value
+        self.add_rule(term.value, self.split_tree(tree.children[1]))
 
     def split_tree(self, tree: Tree):
         tree_type = tree.data
@@ -254,6 +261,10 @@ class Grammar:
             return self.split_or_expr(tree)
         if tree_type == 'star_expr':
             return self.split_star_expr(tree)
+        if tree_type == 'plus_expr':
+            return self.split_plus_expr(tree)
+        if tree_type == 'q_expr':
+            return self.split_q_expr(tree)
         if tree_type == 'ready_expr':
             ret = []
             for token in tree.children:
@@ -287,6 +298,34 @@ class Grammar:
             rule = self.split_tree(tree.children[0])
             term = self.add_nonterminal()
             self.add_rule(term, rule + [term])
+            self.add_rule(term, ['eps'])
+            return [term]
+
+    def split_plus_expr(self, tree):
+        if type(tree.children[0]) == Token:
+            token = tree.children[0]
+            term = self.add_nonterminal()
+            self.add_rule(term, [token.value, term])
+            self.add_rule(term, [token.value])
+            return [term]
+        else:
+            rule = self.split_tree(tree.children[0])
+            term = self.add_nonterminal()
+            self.add_rule(term, rule + [term])
+            self.add_rule(term, rule)
+            return [term]
+
+    def split_q_expr(self, tree):
+        if type(tree.children[0]) == Token:
+            token = tree.children[0]
+            term = self.add_nonterminal()
+            self.add_rule(term, [token.value])
+            self.add_rule(term, ['eps'])
+            return [term]
+        else:
+            rule = self.split_tree(tree.children[0])
+            term = self.add_nonterminal()
+            self.add_rule(term, rule)
             self.add_rule(term, ['eps'])
             return [term]
 

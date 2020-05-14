@@ -1,8 +1,9 @@
 from antlr4 import *
 from antlr.GrammarLexer import GrammarLexer
 from antlr.GrammarParser import GrammarParser
-from antlr.GrammarListener import GrammarListener
+from antlr.MyGrammarListener import MyGrammarListener
 from antlr.GrammarErrorListener import MyErrorListener
+from src.script_handler import ScriptHandler
 
 
 def read_from_file(file_name):
@@ -13,11 +14,11 @@ def read_from_file(file_name):
     parser.addErrorListener(MyErrorListener)
     try:
         tree = parser.complete_script()
-        print('Script is correct')
         walker = ParseTreeWalker()
-        collector = GrammarListener()
+        collector = MyGrammarListener()
         walker.walk(collector, tree)
         listener_to_dot(collector)
+        print('Script is correct')
         return tree
     except:
         print('Script is incorrect')
