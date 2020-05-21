@@ -58,8 +58,31 @@ class ScriptHandler(ParseTreeListener):
         self.cur_graph = ctx.children[3].symbol.text[1:-1]
 
     def exitSelect_stmt(self, ctx: GrammarParser.Select_stmtContext):
+        new_g = Grammar()
+        new_g.rules = deepcopy(self.g.rules)
+        new_g.nonterminals = self.g.nonterminals.copy()
+        new_g.added_nonterminals = self.g.added_nonterminals
+        new_start = new_g.add_nonterminal()
+        new_g.start = new_start
+        new_g.add_antlr_rule(new_start + ' ' + self.cur_right)
+        if self.graphs_path is None:
+            raise Exception('Graph is not loaded')
+        graph_path = self.graphs_path + '/' + self.cur_graph
+        gr = Graph()
+        gr.read_graph(graph_path)
+        vs_len = len(gr.vertices)
+        if self.start_id is not None and self.start_id >= vs_len:
+            raise Exception('wrong ID')
+        if self.finish_id is not None and self.finish_id >= vs_len:
+            raise Exception('wrong ID')
+        t = evalCFPQ(new_g, gr)
+        m = t[new_g.start].toarray()
         if self.cur_op == 'exists':
-            self.handle_exist()
+            self.handle_exist(m, vs_len)
+        elif self.cur_op == 'count':
+            self.handle_count(m, vs_len)
+        else:
+            self.handle_select(m, vs_len)
         self.cur_right = ''
         self.cur_op = ''
         self.start_v = None
@@ -152,27 +175,163 @@ class ScriptHandler(ParseTreeListener):
             self.print_file(file, cur_file)
             cur_file.close()
 
-    def handle_exist(self):
-        new_g = Grammar()
-        new_g.rules = deepcopy(self.g.rules)
-        new_g.nonterminals = self.g.nonterminals.copy()
-        new_g.added_nonterminals = self.g.added_nonterminals
-        new_start = new_g.add_nonterminal()
-        new_g.start = new_start
-        new_g.add_antlr_rule(new_start + ' ' + self.cur_right)
-        graph_path = self.graphs_path + '/' + self.cur_graph
-        gr = Graph()
-        gr.read_graph(graph_path)
-        vs_len = len(gr.vertices)
-        if self.start_id is not None and self.start_id >= vs_len:
-            raise Exception('wrong ID')
-        if self.finish_id is not None and self.finish_id >= vs_len:
-            raise Exception('wrong ID')
-        if (self.start_v not in self.vs and self.start_v != '_') or \
-           (self.finish_v not in self.vs and self.finish_v != '_'):
-            raise Exception('wrong vertice name')
-        t = evalCFPQ(new_g, gr)
-        m = t[new_g.start].toarray()
+    def handle_select(self, m, vs_len):
+        if len(self.vs) == 1:
+            ret = self.handle_select_v(m, vs_len)
+        else:
+            ret = self.handle_select_pair(m, vs_len)
+        print(sorted(ret))
+
+    def handle_select_v(self, m, vs_len):
+        ret = set()
+        is_start = self.start_v == self.vs[0]
+        is_finish = self.finish_v == self.vs[0]
+
+        if is_start and is_finish:
+            for i in range(vs_len):
+                if m[i][i] == 1:
+                    ret.add(i)
+                return ret
+        if is_start and self.start_id is not None:
+            if self.finish_id is None:
+                for j in range(vs_len):
+                    if m[self.start_id][j] == 1:
+                        return set(self.start_id)
+            elif m[self.start_id][self.finish_id] == 1:
+                return set(self.start_id)
+            return set()
+        if is_finish and self.finish_id is not None:
+            if self.start_id is None:
+                for i in range(vs_len):
+                    if m[i][self.finish_id] == 1:
+                        return set(self.finish_id)
+            elif m[self.start_id][self.finish_id] == 1:
+                return set(self.finish_id)
+            return set()
+        if is_start:
+            ret = set()
+            if self.finish_id is None:
+                for i in range(vs_len):
+                    for j in range(vs_len):
+                        if m[i][j] == 1:
+                            ret.add(i)
+                return ret
+            for i in range(vs_len):
+                if m[i][self.finish_id] == 1:
+                    ret.add(i)
+            return ret
+        if is_finish:
+            ret = set()
+            if self.start_id is None:
+                for i in range(vs_len):
+                    for j in range(vs_len):
+                        if m[i][j] == 1:
+                            ret.add(j)
+                return ret
+            for j in range(vs_len):
+                if m[self.start_id][j] == 1:
+                    ret.add(j)
+            return ret
+        return set()
+
+    def handle_select_pair(self, m, vs_len):
+        ret = set()
+        if self.start_v not in self.vs or self.finish_v not in self.vs:
+            raise Exception('Wrong vertices')
+        if self.start_id is not None and self.finish_id is not None:
+            if m[self.start_id][self.finish_id]:
+                ret.add((self.start_id, self.finish_id))
+            return ret
+        if self.start_id is not None:
+            for j in range(vs_len):
+                if m[self.start_id][j] == 1:
+                    ret.add((self.start_id, j))
+            return ret
+        if self.finish_id is not None:
+            for i in range(vs_len):
+                if m[i][self.finish_id] == 1:
+                    ret.add((i, self.finish_id))
+        for i in range(vs_len):
+            for j in range(vs_len):
+                if m[i][j] == 1:
+                    ret.add((i, j))
+        return ret
+
+    def handle_count(self, m, vs_len):
+        if len(self.vs) == 1:
+            ret = self.handle_count_v(m, vs_len)
+        else:
+            ret = self.handle_count_pair(m, vs_len)
+        print(ret)
+
+    def handle_count_v(self, m, vs_len):
+        is_start = self.start_v == self.vs[0]
+        is_finish = self.finish_v == self.vs[0]
+
+        ret = 0
+        if is_start and is_finish:
+            for i in range(vs_len):
+                ret += m[i][i]
+                return ret
+        if is_start and self.start_id is not None:
+            if self.finish_id is None:
+                return self.count_row(m, vs_len, self.start_id)
+            return int(m[self.start_id][self.finish_id])
+        if is_finish and self.finish_id is not None:
+            if self.start_id is None:
+                return self.count_column(m, vs_len, self.finish_id)
+            return int(m[self.start_id][self.finish_id])
+        if is_start:
+            if self.finish_id is None:
+                s = set()
+                for i in range(vs_len):
+                    for j in range(vs_len):
+                        if m[i][j]:
+                            s.add(i)
+                return len(s)
+            return self.count_column(m, vs_len, self.finish_id)
+        if is_finish:
+            if self.start_id is None:
+                s = set()
+                for i in range(vs_len):
+                    for j in range(vs_len):
+                        if m[i][j]:
+                            s.add(j)
+                return len(s)
+            return self.count_column(m, vs_len, self.start_id)
+        return 0
+
+    def handle_count_pair(self, m, vs_len):
+        if self.start_id is not None and self.finish_id is not None:
+            return int(m[self.start_id][self.finish_id])
+        if self.start_id is not None:
+            return self.count_row(m, vs_len, self.start_id)
+        if self.finish_id is not None:
+            ret = 0
+            for i in range(vs_len):
+                ret += self.count_column(m, vs_len, self.finish_id)
+            return ret
+        if self.start_v in self.vs and self.finish_v in self.vs:
+            ret = 0
+            for i in range(vs_len):
+                for j in range(vs_len):
+                    ret += int(m[i][j])
+            return ret
+        return 0
+
+    def count_row(self, m, vs_len, i):
+        ret = 0
+        for j in range(vs_len):
+            ret += int(m[i][j])
+        return ret
+
+    def count_column(self, m, vs_len, j):
+        ret = 0
+        for i in range(vs_len):
+            ret += int(m[i][j])
+        return ret
+
+    def handle_exist(self, m, vs_len):
         if len(self.vs) == 1:
             ret = self.handle_exists_v(m, vs_len)
         else:
@@ -185,18 +344,18 @@ class ScriptHandler(ParseTreeListener):
 
         if is_start and is_finish:
             for i in range(vs_len):
-                if m[i][i] == 1:
+                if m[i][i]:
                     return True
         elif is_start and self.start_id is not None:
             if self.finish_id is None:
                 return self.check_row(m, vs_len, self.start_id)
             else:
-                return m[self.start_id][self.finish_id] == 1
+                return m[self.start_id][self.finish_id]
         elif is_finish and self.finish_id is not None:
             if self.start_id is None:
                 return self.check_column(m, vs_len, self.finish_id)
             else:
-                return m[self.start_id][self.finish_id] == 1
+                return m[self.start_id][self.finish_id]
         elif is_start:
             if self.finish_id is None:
                 return self.check_all(m, vs_len)
@@ -210,7 +369,7 @@ class ScriptHandler(ParseTreeListener):
 
     def handle_exists_pair(self, m, vs_len):
         if self.start_id is not None and self.finish_id is not None:
-            return m[self.start_id][self.finish_id] == 1
+            return m[self.start_id][self.finish_id]
         elif self.start_v in self.vs and self.finish_v in self.vs:
             if self.start_id is not None:
                 return self.check_row(m, vs_len, self.start_id)
@@ -223,19 +382,19 @@ class ScriptHandler(ParseTreeListener):
     def check_all(self, m, vs_len):
         for i in range(vs_len):
             for j in range(vs_len):
-                if m[i][j] == 1:
+                if m[i][j]:
                     return True
         return False
 
     def check_row(self, m, vs_len, i):
         for j in range(vs_len):
-            if m[i][j] == 1:
+            if m[i][j]:
                 return True
         return False
 
     def check_column(self, m, vs_len, j):
         for i in range(vs_len):
-            if m[i][j] == 1:
+            if m[i][j]:
                 return True
         return False
 
